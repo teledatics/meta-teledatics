@@ -9,7 +9,7 @@ SRCBRANCH = "nrc-dkms-v1.2.2-rc1"
 SRCREV = "d7a3b5370fe4b0fbf8c9e296d43e7813d8347ae2"
 SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
 
-S = "${WORKDIR}/git/package/host/src/nrc"
+S = "${WORKDIR}/git/package/src/nrc"
 
 EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR}"
 
