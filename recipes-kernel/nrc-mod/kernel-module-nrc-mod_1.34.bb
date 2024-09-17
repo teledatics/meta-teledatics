@@ -19,6 +19,9 @@ do_install() {
 
 RPROVIDES_${PN} += "${PN}"
 
+# TODO: evaluate config needs. This line is needed to avoid do_configure() failures.
+do_configure[noexec] = "1"
+
 # add helper scripts and modprobe conf file
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://nrc.conf"
