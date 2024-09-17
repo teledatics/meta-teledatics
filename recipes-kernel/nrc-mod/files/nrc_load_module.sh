@@ -4,7 +4,7 @@
 
 SPI_BUS_NO=`nrc_busno.sh`
 SPI_GPIO_NO=`nrc_gpiono.sh`
-MOD_PATH="/lib/modules/`uname -r`/updates/dkms"
+MOD_PATH="/lib/modules/`uname -r`/extra/"
 MOD_NAME="nrc"
 MOD_PATH_NAME=`ls ${MOD_PATH}/${MOD_NAME}*`
 

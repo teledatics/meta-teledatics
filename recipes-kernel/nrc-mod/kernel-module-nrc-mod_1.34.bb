@@ -5,19 +5,24 @@ LIC_FILES_CHKSUM ?= "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171
 
 inherit module
 
+DEPENDS = "virtual/kernel"
+
 SRCBRANCH = "nrc-dkms-v1.2.2-rc1"
 SRCREV = "d7a3b5370fe4b0fbf8c9e296d43e7813d8347ae2"
 SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git/package/src/nrc"
 
-EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR}"
-
-do_install() {
-    make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} modules_install
-}
+EXTRA_OEMAKE += " KDIR=${STAGING_KERNEL_DIR} "
+EXTRA_OEMAKE:append_task-install = " -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D}"
 
 RPROVIDES_${PN} += "${PN}"
+
+addtask touch_config after do_fetch before do_build
+
+do_touch_config() {
+    touch ${STAGING_KERNEL_DIR}/.config
+}
 
 # add helper scripts and modprobe conf file
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
