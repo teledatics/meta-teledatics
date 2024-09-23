@@ -11,16 +11,13 @@ SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=
 
 S = "${WORKDIR}/git/package/src/nrc"
 
-EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR}"
+EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
 
 do_install() {
     make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} modules_install
 }
 
 RPROVIDES_${PN} += "${PN}"
-
-# TODO: evaluate config needs. This line is needed to avoid do_configure() failures.
-do_configure[noexec] = "1"
 
 # add helper scripts and modprobe conf file
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
