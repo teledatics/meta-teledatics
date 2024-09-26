@@ -54,19 +54,39 @@ python () {
     bb.note(f"RADIO_VERSION set to: {radio_version}")
 }
 
-DEPENDS = "virtual/kernel"
+DEPENDS = "virtual/kernel "
 
 SRCBRANCH = "nrc-dkms-v1.2.2-rc1"
-SRCREV = "549f0a8e414a5d55a9d1132a465a8ebf22ab69e3"
+SRCREV = "d7a3b5370fe4b0fbf8c9e296d43e7813d8347ae2"
 SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git/package/src/nrc"
 
-BACKPORT_DIR = "${WORKDIR}/../../kernel-module-bdsdmac-backports/${RADIO_VERSION}-r0/laird-backport-${RADIO_VERSION}"
-MODULES_MODULE_SYMVERS_LOCATION := "${BACKPORT_DIR}"
+BACKPORT_PN = "kernel-module-bdsdmac-backports"
+BACKPORT_PV = "${RADIO_VERSION}"
+BACKPORT_PR = "r0"
+BACKPORT_DIR = "${TMPDIR}/work/${MULTIMACH_TARGET_SYS}/${BACKPORT_PN}/${BACKPORT_PV}-${BACKPORT_PR}/laird-backport-${RADIO_VERSION}"
+BACKPORT_DIR_ALT = "../../../../../../${BACKPORT_PN}/${BACKPORT_PV}-${BACKPORT_PR}/laird-backport-${RADIO_VERSION}"
+
+# set BACKPORT_DIR to a directory that exists
+python () {
+    import os
+
+    backports_dir = d.getVar('BACKPORT_DIR')
+    backports_dir_alt = d.getVar('BACKPORT_DIR_ALT')
+
+    if os.path.isdir(backports_dir):
+        bb.note("Directory exists: %s" % backports_dir)
+    else:
+        # Note: module.bbclass prepended ${B} so we need a relative location
+        bb.warn("Directory did not exist, reset to: %s" % backports_dir_alt)
+        d.setVar('BACKPORT_DIR',backports_dir_alt)
+
+}
+
 EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
 EXTRA_OEMAKE += "EXTRA_CFLAGS=-I${BACKPORT_DIR}/backport-include -I${BACKPORT_DIR}/include"
-EXTRA_OEMAKE += "KBUILD_EXTRA_SYMBOLS=${KBUILD_EXTRA_SYMBOLS}"
+EXTRA_OEMAKE += "EXTRA_SYMVERS=${BACKPORT_DIR}/Module.symvers"
 
 RPROVIDES_${PN} += "${PN}"
 RDEPENDS_${PN} += "kernel-module-bdsdmac-backports"
