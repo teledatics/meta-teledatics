@@ -14,11 +14,7 @@ SRC_URI = "git://github.com/teledatics/ftdi-spi-linux.git;protocol=https;branch=
 
 S = "${WORKDIR}/git"
 
-EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR}"
-
-do_configure:prepend() {
-    touch ${STAGING_KERNEL_DIR}/.config
-}
+EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
 
 do_install() {
     make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} modules_install

@@ -5,8 +5,24 @@ LIC_FILES_CHKSUM ?= "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171
 
 inherit module
 
-# find RADIO-VERSION from meta-summit-radio .inc file and copy the backports Module.symver to the working directory
-python () {
+DEPENDS = "virtual/kernel "
+
+# Wait for backports and related drivers to be built first
+do_configure[depends] = "kernel-module-bdsdmac-backports:do_install"
+
+SRCBRANCH = "nrc-dkms-v1.2.2-rc1"
+SRCREV = "f004eaabb99f53acaca2bb20f0d6ecefd7f451e0"
+SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
+
+S = "${WORKDIR}/git/package/src/nrc"
+
+BACKPORTS_PN = "kernel-module-bdsdmac-backports"
+BACKPORTS_PR = "r0"
+
+RPROVIDES_${PN} += "${PN}"
+RDEPENDS_${PN} += "kernel-module-bdsdmac-backports"
+
+python do_configure_backports() {
     import os
     import bb
 
@@ -49,47 +65,35 @@ python () {
     if not radio_version:
         bb.fatal("RADIO_VERSION not defined in the include file.")
 
-    # Set RADIO_VERSION for use in the recipe
-    d.setVar("RADIO_VERSION", radio_version)
-    bb.note(f"RADIO_VERSION set to: {radio_version}")
-}
+    bb.note(f"Backports radio version is: {radio_version}")
 
-DEPENDS = "virtual/kernel "
+    tmp_dir = d.getVar('TMPDIR')
+    tgt_sys = d.getVar('MULTIMACH_TARGET_SYS')
+    backports_pn = d.getVar('BACKPORTS_PN')
+    backports_pr = d.getVar('BACKPORTS_PR')
 
-SRCBRANCH = "nrc-dkms-v1.2.2-rc1"
-SRCREV = "d7a3b5370fe4b0fbf8c9e296d43e7813d8347ae2"
-SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
+    backports_dir = f"{tmp_dir}/work/{tgt_sys}/{backports_pn}/{radio_version}-{backports_pr}/laird-backport-{radio_version}"
+    bb.note("Backports directory at: %s" % backports_dir)
 
-S = "${WORKDIR}/git/package/src/nrc"
+    if not os.path.isdir(backports_dir):
+        bb.fatal("Backports directory is not found where expected.")
 
-BACKPORT_PN = "kernel-module-bdsdmac-backports"
-BACKPORT_PV = "${RADIO_VERSION}"
-BACKPORT_PR = "r0"
-BACKPORT_DIR = "${TMPDIR}/work/${MULTIMACH_TARGET_SYS}/${BACKPORT_PN}/${BACKPORT_PV}-${BACKPORT_PR}/laird-backport-${RADIO_VERSION}"
-BACKPORT_DIR_ALT = "../../../../../../${BACKPORT_PN}/${BACKPORT_PV}-${BACKPORT_PR}/laird-backport-${RADIO_VERSION}"
+    d.setVar("BACKPORTS_DIR", backports_dir)
 
-# set BACKPORT_DIR to a directory that exists
-python () {
-    import os
+    ksrc = d.getVar('STAGING_KERNEL_DIR')
+    kbuild = d.getVar('STAGING_KERNEL_BUILDDIR')
 
-    backports_dir = d.getVar('BACKPORT_DIR')
-    backports_dir_alt = d.getVar('BACKPORT_DIR_ALT')
-
-    if os.path.isdir(backports_dir):
-        bb.note("Directory exists: %s" % backports_dir)
-    else:
-        # Note: module.bbclass prepended ${B} so we need a relative location
-        bb.warn("Directory did not exist, reset to: %s" % backports_dir_alt)
-        d.setVar('BACKPORT_DIR',backports_dir_alt)
+    d.setVar("EXTRA_OEMAKE", f"KDIR={ksrc} KDIR_CONFIG={kbuild}")
+    d.appendVar("EXTRA_OEMAKE", f" EXTRA_CFLAGS=-I{backports_dir}/backport-include -I{backports_dir}/include")
+    d.appendVar("EXTRA_OEMAKE", f" EXTRA_SYMVERS={backports_dir}/Module.symvers")
+    bb.note(f"Updated EXTRA_OEMAKE: {d.getVar('EXTRA_OEMAKE', True)}")
 
 }
 
-EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
-EXTRA_OEMAKE += "EXTRA_CFLAGS=-I${BACKPORT_DIR}/backport-include -I${BACKPORT_DIR}/include"
-EXTRA_OEMAKE += "EXTRA_SYMVERS=${BACKPORT_DIR}/Module.symvers"
+do_configure[prefuncs] += "do_configure_backports"
+do_compile[prefuncs] += "do_configure_backports"
+do_install[prefuncs] += "do_configure_backports"
 
-RPROVIDES_${PN} += "${PN}"
-RDEPENDS_${PN} += "kernel-module-bdsdmac-backports"
 
 # add helper scripts and modprobe conf file
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
