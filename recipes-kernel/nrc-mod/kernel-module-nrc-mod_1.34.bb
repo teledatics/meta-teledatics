@@ -7,6 +7,8 @@ inherit module
 
 DEPENDS = "virtual/kernel "
 
+KERNEL_VERSION = "6.1.22"
+
 # Wait for backports and related drivers to be built first
 do_configure[depends] = "kernel-module-bdsdmac-backports:do_install"
 
