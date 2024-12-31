@@ -9,15 +9,27 @@ inherit module
 DEPENDS = "virtual/kernel"
 
 SRCBRANCH = "main"
-SRCREV = "7cb17909ecd7b7bef82096d03eabbfc1be2e2b32"
+SRCREV = "af20260193cf2949df4ebcc4820d3cbfb8c5c80e"
 SRC_URI = "git://github.com/teledatics/ftdi-spi-linux.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git"
 
 EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
 
-do_install() {
-    make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} modules_install
+python () {
+    import os
+    import bb
+    
+    # set misc variables to support module build
+    ksrc = d.getVar('STAGING_KERNEL_DIR')
+    kbuild = d.getVar('STAGING_KERNEL_BUILDDIR')
+    kernel_version = d.getVar('KERNEL_VERSION')
+    
+    d.setVar('KDIR', ksrc)
+    d.setVar('KDIR_CONFIG', kbuild)
+
+    d.setVar("EXTRA_OEMAKE", f"KDIR={ksrc} KDIR_CONFIG={kbuild} KERNEL_VERSION={kernel_version}")
+
 }
 
 RPROVIDES_${PN} += "${PN}"
