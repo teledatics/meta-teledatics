@@ -13,11 +13,22 @@ S = "${WORKDIR}/git/package/src/nrc"
 
 EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
 
+FILES:${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/*.ko"
+
+RPROVIDES:${PN} = "kernel-module-nrc-${KERNEL_VERSION}"
+RDEPENDS:${PN} += "kernel-${KERNEL_VERSION}"
+
 do_install() {
-    make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} modules_install
+    make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} INSTALL_MOD_DIR=extra modules_install
+
+    if [ "${nonarch_base_libdir}" != "/lib" ]; then
+        install -d ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra
+        mv ${D}/lib/modules/${KERNEL_VERSION}/extra/*.ko ${D}${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/
+        rm -rf ${D}/lib
+    fi
 }
 
-RPROVIDES_${PN} += "${PN}"
+#RPROVIDES_${PN} += "${PN}"
 
 # add helper scripts and modprobe conf file
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
