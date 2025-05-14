@@ -20,6 +20,10 @@ RDEPENDS:${PN} += "kernel-${KERNEL_VERSION}"
 
 KERNEL_MODULE_AUTOLOAD += "mac80211"
 
+do_compile:prepend() {
+    sed -i 's/^\(#define CONFIG_SPI_USE_DT\)/\/\/\1/' ${S}/nrc-build-config.h
+}
+
 do_install() {
     make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} INSTALL_MOD_DIR=extra modules_install
 
