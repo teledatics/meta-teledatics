@@ -5,8 +5,8 @@ LIC_FILES_CHKSUM ?= "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171
 
 inherit module
 
-SRCBRANCH = "nrc-dkms-v1.2.2-rc1"
-SRCREV = "549f0a8e414a5d55a9d1132a465a8ebf22ab69e3"
+SRCBRANCH = "kernel_6_8_support"
+SRCREV = "a32efc2b66e109450f3ee9c7e8d577fc72e15826"
 SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git/package/src/nrc"
