@@ -18,6 +18,8 @@ FILES:${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/*.ko"
 RPROVIDES:${PN} = "kernel-module-nrc-${KERNEL_VERSION}"
 RDEPENDS:${PN} += "kernel-${KERNEL_VERSION}"
 
+KERNEL_MODULE_AUTOLOAD += "mac80211"
+
 do_install() {
     make -C ${STAGING_KERNEL_DIR} M=${S} INSTALL_MOD_PATH=${D} INSTALL_MOD_DIR=extra modules_install
 
