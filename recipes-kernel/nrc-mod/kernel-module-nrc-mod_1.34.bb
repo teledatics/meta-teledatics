@@ -43,7 +43,7 @@ SRC_URI += "file://nrc_load_module.sh"
 SRC_URI += "file://nrc_busno.sh"
 SRC_URI += "file://nrc_gpiono.sh"
 
-FILES:${PN} += "${sysconfdir}/modprobe.d/* ${bindir}/* ${base_libdir}/firmware/*"
+FILES:${PN} += "${sysconfdir}/modprobe.d/* ${bindir}/* ${base_libdir}/firmware/* ${sysconfdir}/modules-load.d"
 
 do_install:append() {
     install -d ${D}${sysconfdir}/modprobe.d/
