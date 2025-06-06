@@ -11,7 +11,7 @@ SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=
 
 S = "${WORKDIR}/git/package/src/nrc"
 
-EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}"
+EXTRA_OEMAKE = "KDIR=${STAGING_KERNEL_DIR} KDIR_CONFIG=${STAGING_KERNEL_BUILDDIR}  EXTRA_CFLAGS='-DCONFIG_MAC80211_MESH'"
 
 FILES:${PN} += "${nonarch_base_libdir}/modules/${KERNEL_VERSION}/extra/*.ko"
 
@@ -55,4 +55,7 @@ do_install:append() {
     install -d ${D}${base_libdir}/firmware/
     install -m 644 ${S}/../../evk/binary/nrc7394_cspi.bin ${D}${base_libdir}/firmware/
     install -m 644 ${S}/../../evk/binary/nrc7394_bd.dat ${D}${base_libdir}/firmware/
+# load mac80211 if it is compiled as a module
+    install -d ${D}${sysconfdir}/modules-load.d
+    echo "mac80211" > ${D}${sysconfdir}/modules-load.d/mac80211.conf
 }
