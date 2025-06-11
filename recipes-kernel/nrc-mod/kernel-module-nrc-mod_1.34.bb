@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM ?= "file://${COMMON_LICENSE_DIR}/GPL-2.0-only;md5=801f80980d171
 inherit module
 
 SRCBRANCH = "kernel_6_8_support"
-SRCREV = "8cbf30fcecf7720ea6ef28ac2547f03c0101f8fd"
+SRCREV = "2642a31d3e127273a4db9680b7e54dd404cfd7f2"
 SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git/package/src/nrc"
