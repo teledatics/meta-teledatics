@@ -18,12 +18,6 @@ if lsmod | grep -Eq "^${MOD_NAME} "; then
 	exit -1;
 fi
 
-# fix for endless deep sleep
-/usr/bin/cli_app gpio write 16 1
-
-# set TX power to near maximum
-/usr/bin/cli_app set txpwr limit 28
-
 HIF_SPEED=100000000
 
 insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_num=${SPI_BUS_NO} spi_cs_num=0 spi_gpio_irq=-1 spi_polling_interval=5 hifspeed=${HIF_SPEED}
@@ -32,3 +26,9 @@ insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_
 while ! lsmod | grep -Eq "^${MOD_NAME} "; do
         sleep 1;
 done
+
+# fix for endless deep sleep
+/usr/bin/cli_app gpio write 16 1
+
+# set TX power to near maximum
+/usr/bin/cli_app set txpwr limit 28
