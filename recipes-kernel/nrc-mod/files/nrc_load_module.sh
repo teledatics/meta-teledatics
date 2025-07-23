@@ -18,6 +18,9 @@ if lsmod | grep -Eq "^${MOD_NAME} "; then
 	exit -1;
 fi
 
+# fix for endless deep sleep
+/usr/bin/cli_app gpio write 16 1
+
 HIF_SPEED=100000000
 
 insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_num=${SPI_BUS_NO} spi_cs_num=0 spi_gpio_irq=-1 spi_polling_interval=5 hifspeed=${HIF_SPEED}
