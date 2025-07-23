@@ -18,9 +18,9 @@ if lsmod | grep -Eq "^${MOD_NAME} "; then
 	exit -1;
 fi
 
-HIF_SPEED=8000000
+HIF_SPEED=100000000
 
-insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_num=${SPI_BUS_NO} spi_cs_num=0 spi_gpio_irq=-1 spi_polling_interval=4 hifspeed=${HIF_SPEED}
+insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_num=${SPI_BUS_NO} spi_cs_num=0 spi_gpio_irq=-1 spi_polling_interval=5 hifspeed=${HIF_SPEED}
 
 # wait until module is loaded
 while ! lsmod | grep -Eq "^${MOD_NAME} "; do
