@@ -27,6 +27,8 @@ while ! lsmod | grep -Eq "^${MOD_NAME} "; do
         sleep 1;
 done
 
+/bin/ifconfig wlan1 up
+
 # fix for endless deep sleep
 /usr/bin/cli_app gpio write 16 1
 
