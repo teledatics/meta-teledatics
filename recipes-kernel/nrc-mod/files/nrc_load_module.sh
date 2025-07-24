@@ -27,11 +27,11 @@ while ! lsmod | grep -Eq "^${MOD_NAME} "; do
         sleep 1;
 done
 
-/bin/ifconfig wlan1 up
-
 # fix for endless deep sleep
 /usr/bin/cli_app gpio write 16 1
-/usr/bin/dev wlan1 set power_save off
 
 # set TX power to maximum
 /usr/bin/cli_app set txpwr limit 30
+
+/bin/ifconfig wlan1 up
+/usr/bin/dev wlan1 set power_save off
