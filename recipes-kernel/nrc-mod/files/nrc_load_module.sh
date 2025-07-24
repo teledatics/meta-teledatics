@@ -31,6 +31,7 @@ done
 
 # fix for endless deep sleep
 /usr/bin/cli_app gpio write 16 1
+/usr/bin/dev wlan1 set power_save off
 
-# set TX power to near maximum
-/usr/bin/cli_app set txpwr limit 28
+# set TX power to maximum
+/usr/bin/cli_app set txpwr limit 30
