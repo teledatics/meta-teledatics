@@ -8,7 +8,7 @@ inherit module
 #SRCBRANCH = "kernel_6_8_support"
 #SRCREV = "3f21d77f7c29e644fcfdc1cfa976107e154aee75"
 SRCBRANCH = "kernel_6_12_support"
-SRCREV = "060a4f6cf351d582a9c9adfd7e0ea57ff14ea813"
+SRCREV = "0a474f29922dd914ac1811a32e68924079f33c03"
 SRC_URI = "git://github.com/teledatics/nrc7394_sw_pkg.git;protocol=https;branch=${SRCBRANCH}"
 
 S = "${WORKDIR}/git/package/src/nrc"
