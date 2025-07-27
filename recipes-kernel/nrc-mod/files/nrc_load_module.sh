@@ -18,7 +18,7 @@ if lsmod | grep -Eq "^${MOD_NAME} "; then
 	exit -1;
 fi
 
-HIF_SPEED=8000000
+HIF_SPEED=12000000
 
 insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_num=${SPI_BUS_NO} spi_cs_num=0 spi_gpio_irq=-1 spi_polling_interval=5 hifspeed=${HIF_SPEED}
 
@@ -26,14 +26,3 @@ insmod ${MOD_PATH_NAME} fw_name=nrc7394_cspi.bin bd_name=nrc7394_bd.dat spi_bus_
 while ! lsmod | grep -Eq "^${MOD_NAME} "; do
         sleep 1;
 done
-
-sleep 2
-
-# fix for endless deep sleep
-/bin/cli_app gpio write 16 1
-
-# set TX power to maximum
-/bin/cli_app set txpwr limit 30
-
-/bin/ifconfig wlan1 up
-/sbin/iw wlan1 set power_save off
